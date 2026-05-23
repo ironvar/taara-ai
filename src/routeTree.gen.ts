@@ -11,6 +11,18 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppVideoRouteImport } from './routes/app.video'
+import { Route as AppToolsRouteImport } from './routes/app.tools'
+import { Route as AppSubscriptionRouteImport } from './routes/app.subscription'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppSavedRouteImport } from './routes/app.saved'
+import { Route as AppPromptsRouteImport } from './routes/app.prompts'
+import { Route as AppImageRouteImport } from './routes/app.image'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppCompareRouteImport } from './routes/app.compare'
+import { Route as AppChatRouteImport } from './routes/app.chat'
+import { Route as AppBlogRouteImport } from './routes/app.blog'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const AppRoute = AppRouteImport.update({
@@ -23,6 +35,66 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVideoRoute = AppVideoRouteImport.update({
+  id: '/video',
+  path: '/video',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppToolsRoute = AppToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSubscriptionRoute = AppSubscriptionRouteImport.update({
+  id: '/subscription',
+  path: '/subscription',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSavedRoute = AppSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPromptsRoute = AppPromptsRouteImport.update({
+  id: '/prompts',
+  path: '/prompts',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppImageRoute = AppImageRouteImport.update({
+  id: '/image',
+  path: '/image',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCompareRoute = AppCompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppChatRoute = AppChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBlogRoute = AppBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => AppRoute,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -31,31 +103,111 @@ const ApiChatRoute = ApiChatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/app/blog': typeof AppBlogRoute
+  '/app/chat': typeof AppChatRoute
+  '/app/compare': typeof AppCompareRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/image': typeof AppImageRoute
+  '/app/prompts': typeof AppPromptsRoute
+  '/app/saved': typeof AppSavedRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/subscription': typeof AppSubscriptionRoute
+  '/app/tools': typeof AppToolsRoute
+  '/app/video': typeof AppVideoRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
   '/api/chat': typeof ApiChatRoute
+  '/app/blog': typeof AppBlogRoute
+  '/app/chat': typeof AppChatRoute
+  '/app/compare': typeof AppCompareRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/image': typeof AppImageRoute
+  '/app/prompts': typeof AppPromptsRoute
+  '/app/saved': typeof AppSavedRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/subscription': typeof AppSubscriptionRoute
+  '/app/tools': typeof AppToolsRoute
+  '/app/video': typeof AppVideoRoute
+  '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/app/blog': typeof AppBlogRoute
+  '/app/chat': typeof AppChatRoute
+  '/app/compare': typeof AppCompareRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/image': typeof AppImageRoute
+  '/app/prompts': typeof AppPromptsRoute
+  '/app/saved': typeof AppSavedRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/subscription': typeof AppSubscriptionRoute
+  '/app/tools': typeof AppToolsRoute
+  '/app/video': typeof AppVideoRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/api/chat'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/api/chat'
+    | '/app/blog'
+    | '/app/chat'
+    | '/app/compare'
+    | '/app/dashboard'
+    | '/app/image'
+    | '/app/prompts'
+    | '/app/saved'
+    | '/app/settings'
+    | '/app/subscription'
+    | '/app/tools'
+    | '/app/video'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/api/chat'
-  id: '__root__' | '/' | '/app' | '/api/chat'
+  to:
+    | '/'
+    | '/api/chat'
+    | '/app/blog'
+    | '/app/chat'
+    | '/app/compare'
+    | '/app/dashboard'
+    | '/app/image'
+    | '/app/prompts'
+    | '/app/saved'
+    | '/app/settings'
+    | '/app/subscription'
+    | '/app/tools'
+    | '/app/video'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/api/chat'
+    | '/app/blog'
+    | '/app/chat'
+    | '/app/compare'
+    | '/app/dashboard'
+    | '/app/image'
+    | '/app/prompts'
+    | '/app/saved'
+    | '/app/settings'
+    | '/app/subscription'
+    | '/app/tools'
+    | '/app/video'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRoute
+  AppRoute: typeof AppRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
 }
 
@@ -75,6 +227,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/video': {
+      id: '/app/video'
+      path: '/video'
+      fullPath: '/app/video'
+      preLoaderRoute: typeof AppVideoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/tools': {
+      id: '/app/tools'
+      path: '/tools'
+      fullPath: '/app/tools'
+      preLoaderRoute: typeof AppToolsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/subscription': {
+      id: '/app/subscription'
+      path: '/subscription'
+      fullPath: '/app/subscription'
+      preLoaderRoute: typeof AppSubscriptionRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/saved': {
+      id: '/app/saved'
+      path: '/saved'
+      fullPath: '/app/saved'
+      preLoaderRoute: typeof AppSavedRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/prompts': {
+      id: '/app/prompts'
+      path: '/prompts'
+      fullPath: '/app/prompts'
+      preLoaderRoute: typeof AppPromptsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/image': {
+      id: '/app/image'
+      path: '/image'
+      fullPath: '/app/image'
+      preLoaderRoute: typeof AppImageRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/compare': {
+      id: '/app/compare'
+      path: '/compare'
+      fullPath: '/app/compare'
+      preLoaderRoute: typeof AppCompareRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/chat': {
+      id: '/app/chat'
+      path: '/chat'
+      fullPath: '/app/chat'
+      preLoaderRoute: typeof AppChatRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/blog': {
+      id: '/app/blog'
+      path: '/blog'
+      fullPath: '/app/blog'
+      preLoaderRoute: typeof AppBlogRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -85,9 +321,41 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppRouteChildren {
+  AppBlogRoute: typeof AppBlogRoute
+  AppChatRoute: typeof AppChatRoute
+  AppCompareRoute: typeof AppCompareRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppImageRoute: typeof AppImageRoute
+  AppPromptsRoute: typeof AppPromptsRoute
+  AppSavedRoute: typeof AppSavedRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppSubscriptionRoute: typeof AppSubscriptionRoute
+  AppToolsRoute: typeof AppToolsRoute
+  AppVideoRoute: typeof AppVideoRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppBlogRoute: AppBlogRoute,
+  AppChatRoute: AppChatRoute,
+  AppCompareRoute: AppCompareRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppImageRoute: AppImageRoute,
+  AppPromptsRoute: AppPromptsRoute,
+  AppSavedRoute: AppSavedRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppSubscriptionRoute: AppSubscriptionRoute,
+  AppToolsRoute: AppToolsRoute,
+  AppVideoRoute: AppVideoRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRoute,
+  AppRoute: AppRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
