@@ -83,6 +83,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Taara — One Platform For Every AI Tool" },
+      { name: "description", content: "Taara is an all-in-one AI hub to chat, create, compare AI models, generate content, and explore 50+ powerful AI tools in one place." },
+      { property: "og:description", content: "Taara is an all-in-one AI hub to chat, create, compare AI models, generate content, and explore 50+ powerful AI tools in one place." },
+      { name: "twitter:description", content: "Taara is an all-in-one AI hub to chat, create, compare AI models, generate content, and explore 50+ powerful AI tools in one place." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/tuQB2xzjOAZrnnRDKx05vJFjpHq1/social-images/social-1779510017052-taara_ai.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/tuQB2xzjOAZrnnRDKx05vJFjpHq1/social-images/social-1779510017052-taara_ai.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
