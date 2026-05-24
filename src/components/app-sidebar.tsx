@@ -176,8 +176,8 @@ export function AppSidebar({ onRequestAuth }: { onRequestAuth?: () => void }) {
         })}
       </nav>
 
-      {!collapsed && (
-        <div className="mx-3 mb-4 rounded-2xl border border-glass-border bg-gradient-to-br from-primary/15 to-transparent p-4">
+      {!collapsed && !user && (
+        <div className="mx-3 mb-3 rounded-2xl border border-glass-border bg-gradient-to-br from-primary/15 to-transparent p-4">
           <p className="text-xs font-medium text-foreground">Taara Pro</p>
           <p className="mt-1 text-xs text-muted-foreground">
             Unlock unlimited chats, image & video gen.
@@ -190,6 +190,7 @@ export function AppSidebar({ onRequestAuth }: { onRequestAuth?: () => void }) {
           </Link>
         </div>
       )}
+      {UserBlock}
     </motion.aside>
   );
 
@@ -257,6 +258,7 @@ export function AppSidebar({ onRequestAuth }: { onRequestAuth?: () => void }) {
                   );
                 })}
               </nav>
+              {UserBlock}
             </motion.aside>
           </>
         )}
