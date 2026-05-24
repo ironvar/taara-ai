@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -8,8 +8,11 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { Toaster } from "sonner";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
+import { AuthProvider } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -124,19 +127,35 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <Toaster
-        position="top-right"
-        theme="dark"
-        toastOptions={{
-          style: {
-            background: "oklch(0.20 0.035 225 / 0.85)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid oklch(0.85 0.08 170 / 0.15)",
-            color: "oklch(0.97 0.01 180)",
-          },
-        }}
-      />
+      <AuthProvider>
+        <AuthInvalidator />
+        <Outlet />
+        <Toaster
+          position="top-right"
+          theme="dark"
+          toastOptions={{
+            style: {
+              background: "oklch(0.20 0.035 225 / 0.85)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid oklch(0.85 0.08 170 / 0.15)",
+              color: "oklch(0.97 0.01 180)",
+            },
+          }}
+        />
+      </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+function AuthInvalidator() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      router.invalidate();
+      queryClient.invalidateQueries();
+    });
+    return () => subscription.unsubscribe();
+  }, [router, queryClient]);
+  return null;
 }
