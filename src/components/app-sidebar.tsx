@@ -37,15 +37,55 @@ const nav = [
   { to: "/app/subscription", label: "Subscription", icon: CreditCard },
 ] as const;
 
-export function AppSidebar() {
+export function AppSidebar({ onRequestAuth }: { onRequestAuth?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   // close mobile on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  const userInitial = (user?.user_metadata?.full_name || user?.email || "?").charAt(0).toUpperCase();
+  const userLabel = user?.user_metadata?.full_name || user?.email || "Guest";
+
+  const UserBlock = (
+    <div className="mx-3 mb-3 mt-1 rounded-2xl border border-glass-border bg-white/[0.02] p-2">
+      {user ? (
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-glow text-xs font-bold text-primary-foreground">
+            {userInitial}
+          </div>
+          {!collapsed && (
+            <>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-medium">{userLabel}</p>
+                <p className="truncate text-[10px] text-muted-foreground">{user.email}</p>
+              </div>
+              <button
+                onClick={async () => { await signOut(); toast.success("Signed out"); }}
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                title="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </>
+          )}
+        </div>
+      ) : (
+        <button
+          onClick={onRequestAuth}
+          className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-primary hover:bg-primary/10"
+        >
+          <LogIn className="h-4 w-4" />
+          {!collapsed && <span>Sign in</span>}
+        </button>
+      )}
+    </div>
+  );
+
 
   const SidebarBody = (
     <motion.aside
