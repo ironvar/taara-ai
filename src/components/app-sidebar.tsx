@@ -14,9 +14,14 @@ import {
   CreditCard,
   ChevronLeft,
   Menu,
+  LogIn,
+  LogOut,
+  User as UserIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Logo } from "./logo";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 const nav = [
   { to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
