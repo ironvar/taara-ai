@@ -62,11 +62,19 @@ function BlogPage() {
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((p, i) => (
           <MotionGlassCard key={p.slug} delay={i * 0.04} className="overflow-hidden p-0">
-            <button onClick={() => setActive(p)} className="block w-full text-left">
-              <div
-                className="aspect-[16/9] w-full transition-transform duration-500 hover:scale-105"
-                style={{ background: `linear-gradient(135deg, oklch(0.50 0.18 ${p.hue}), oklch(0.30 0.20 ${(p.hue + 60) % 360}))` }}
-              />
+            <button onClick={() => setActive(p)} className="group block w-full text-left">
+              <div className="relative aspect-[16/9] w-full overflow-hidden">
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-40 mix-blend-overlay"
+                  style={{ background: `linear-gradient(135deg, oklch(0.50 0.18 ${p.hue}), oklch(0.30 0.20 ${(p.hue + 60) % 360}))` }}
+                />
+              </div>
               <div className="p-5">
                 <p className="text-[11px] uppercase tracking-wider text-primary">{p.category}</p>
                 <h3 className="mt-1.5 font-display text-lg font-semibold leading-snug">{p.title}</h3>

@@ -1,20 +1,57 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Search, Star, ExternalLink, Bookmark } from "lucide-react";
 import { toast } from "sonner";
-import { TOOLS, CATEGORIES, type ToolCategory } from "@/data/tools";
+import { TOOLS, CATEGORIES, toolLogoUrl, type ToolCategory, type AITool } from "@/data/tools";
 import { MotionGlassCard } from "@/components/glass-card";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/tools")({
   head: () => ({ meta: [{ title: "AI Tools Directory — Taara" }] }),
   component: ToolsPage,
 });
 
+function ToolLogo({ tool }: { tool: AITool }) {
+  const logo = toolLogoUrl(tool.url);
+  const [failed, setFailed] = useState(false);
+  if (logo && !failed) {
+    return (
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
+        <img
+          src={logo}
+          alt={`${tool.name} logo`}
+          loading="lazy"
+          onError={() => setFailed(true)}
+          className="h-9 w-9 object-contain"
+        />
+      </div>
+    );
+  }
+  return (
+    <div
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white"
+      style={{ background: `linear-gradient(135deg, oklch(0.55 0.18 ${tool.hue}), oklch(0.40 0.20 ${(tool.hue + 50) % 360}))` }}
+    >
+      {tool.initials}
+    </div>
+  );
+}
+
 function ToolsPage() {
+  const { user } = useAuth();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<ToolCategory | "All">("All");
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+
+  // Load bookmarks
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("bookmarks").select("tool_id").then(({ data }) => {
+      if (data) setBookmarks(new Set(data.map((d) => d.tool_id)));
+    });
+  }, [user]);
 
   const filtered = useMemo(() => {
     const t = q.trim().toLowerCase();
@@ -25,13 +62,26 @@ function ToolsPage() {
     });
   }, [q, cat]);
 
-  const toggleBookmark = (id: string) => {
+  const toggleBookmark = async (id: string) => {
+    if (!user) {
+      toast.error("Sign in to save bookmarks");
+      return;
+    }
+    const has = bookmarks.has(id);
     setBookmarks((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); toast("Removed bookmark"); }
-      else { next.add(id); toast.success("Bookmarked"); }
+      if (has) next.delete(id);
+      else next.add(id);
       return next;
     });
+    if (has) {
+      await supabase.from("bookmarks").delete().eq("user_id", user.id).eq("tool_id", id);
+      toast("Removed bookmark");
+    } else {
+      const { error } = await supabase.from("bookmarks").insert({ user_id: user.id, tool_id: id });
+      if (error) toast.error("Couldn’t save bookmark");
+      else toast.success("Bookmarked");
+    }
   };
 
   return (
@@ -67,14 +117,9 @@ function ToolsPage() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((t, i) => (
-          <MotionGlassCard key={t.id} delay={Math.min(i, 10) * 0.02} className="flex flex-col p-5">
+          <MotionGlassCard key={t.id} delay={Math.min(i, 10) * 0.02} className="glow-hover flex flex-col p-5">
             <div className="flex items-start gap-3">
-              <div
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white"
-                style={{ background: `linear-gradient(135deg, oklch(0.55 0.18 ${t.hue}), oklch(0.40 0.20 ${(t.hue + 50) % 360}))` }}
-              >
-                {t.initials}
-              </div>
+              <ToolLogo tool={t} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <p className="truncate font-semibold">{t.name}</p>

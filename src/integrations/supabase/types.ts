@@ -127,6 +127,36 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          avatar_url: string | null
+          body: string
+          created_at: string
+          display_name: string | null
+          id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          body: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          body?: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       saved_images: {
         Row: {
           created_at: string
