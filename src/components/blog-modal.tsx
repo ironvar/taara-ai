@@ -28,10 +28,13 @@ export function BlogModal({ post, onClose }: { post: BlogPost | null; onClose: (
               >
                 <X className="h-4 w-4" />
               </button>
-              <div
-                className="aspect-[16/8] w-full"
-                style={{ background: `linear-gradient(135deg, oklch(0.50 0.18 ${post.hue}), oklch(0.30 0.20 ${(post.hue + 60) % 360}))` }}
-              />
+              <div className="relative aspect-[16/8] w-full overflow-hidden">
+                <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-40 mix-blend-overlay"
+                  style={{ background: `linear-gradient(135deg, oklch(0.50 0.18 ${post.hue}), oklch(0.30 0.20 ${(post.hue + 60) % 360}))` }}
+                />
+              </div>
               <div className="p-7">
                 <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-wider text-muted-foreground">
                   <span className="rounded-full bg-primary/15 px-2 py-1 text-primary"><Tag className="mr-1 inline h-3 w-3" />{post.category}</span>

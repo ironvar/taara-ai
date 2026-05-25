@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Wand2, Download, Loader2, ImageIcon } from "lucide-react";
+import { Wand2, Download, Loader2, ImageIcon, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { generateImage } from "@/lib/image.functions";
 import { MotionGlassCard } from "@/components/glass-card";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/image")({
   head: () => ({ meta: [{ title: "Image Generator — Taara" }] }),
@@ -15,27 +17,65 @@ export const Route = createFileRoute("/app/image")({
 const STYLES = ["Photorealistic", "Cinematic", "Anime", "3D render", "Watercolor", "Cyberpunk", "Minimal"];
 const ASPECTS = ["1:1", "16:9", "9:16", "4:3", "3:4"] as const;
 
-type Item = { url: string; prompt: string };
+type Item = { id?: string; url: string; prompt: string };
 
 function ImagePage() {
   const gen = useServerFn(generateImage);
+  const { user } = useAuth();
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState<string>("Cinematic");
   const [aspect, setAspect] = useState<typeof ASPECTS[number]>("1:1");
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
+  const [loadingGallery, setLoadingGallery] = useState(true);
+
+  // Load saved images
+  useEffect(() => {
+    if (!user) { setLoadingGallery(false); return; }
+    supabase
+      .from("saved_images")
+      .select("id, image_url, prompt")
+      .order("created_at", { ascending: false })
+      .limit(60)
+      .then(({ data, error }) => {
+        if (!error && data) {
+          setItems(data.map((d) => ({ id: d.id, url: d.image_url, prompt: d.prompt })));
+        }
+        setLoadingGallery(false);
+      });
+  }, [user]);
 
   const run = async () => {
     if (!prompt.trim() || loading) return;
     setLoading(true);
     try {
       const res = await gen({ data: { prompt: prompt.trim(), style, aspect } });
-      setItems((p) => [{ url: res.url, prompt: res.prompt }, ...p]);
-      toast.success("Image generated");
+      const newItem: Item = { url: res.url, prompt: res.prompt };
+
+      // Persist
+      if (user) {
+        const { data, error } = await supabase
+          .from("saved_images")
+          .insert({ user_id: user.id, image_url: res.url, prompt: res.prompt, model: "gemini-image" })
+          .select("id")
+          .single();
+        if (!error && data) newItem.id = data.id;
+      }
+
+      setItems((p) => [newItem, ...p]);
+      toast.success("Image generated & saved");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const remove = async (it: Item, idx: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== idx));
+    if (it.id) {
+      await supabase.from("saved_images").delete().eq("id", it.id);
+      toast("Removed from gallery");
     }
   };
 
@@ -45,7 +85,7 @@ function ImagePage() {
         <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
           AI Image <span className="text-gradient">Generator</span>
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">Describe anything. Get a beautiful image in seconds.</p>
+        <p className="mt-2 text-sm text-muted-foreground">Describe anything. Generations auto-save to your gallery.</p>
       </motion.div>
 
       <MotionGlassCard className="mt-8 p-6">
@@ -98,7 +138,13 @@ function ImagePage() {
 
       <div className="mt-10">
         <h2 className="font-display text-xl font-semibold">Your gallery</h2>
-        {items.length === 0 ? (
+        {loadingGallery ? (
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="glass aspect-square animate-pulse rounded-2xl" />
+            ))}
+          </div>
+        ) : items.length === 0 ? (
           <MotionGlassCard className="mt-4 flex flex-col items-center justify-center p-16 text-center text-muted-foreground">
             <ImageIcon className="h-10 w-10 opacity-40" />
             <p className="mt-3 text-sm">Generated images will appear here.</p>
@@ -106,17 +152,26 @@ function ImagePage() {
         ) : (
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((it, i) => (
-              <MotionGlassCard key={i} delay={i * 0.03} className="overflow-hidden p-0">
-                <img src={it.url} alt={it.prompt} className="aspect-square w-full object-cover" />
+              <MotionGlassCard key={it.id ?? i} delay={Math.min(i, 6) * 0.03} className="group overflow-hidden p-0">
+                <img src={it.url} alt={it.prompt} loading="lazy" className="aspect-square w-full object-cover transition group-hover:scale-[1.02]" />
                 <div className="p-4">
                   <p className="line-clamp-2 text-xs text-muted-foreground">{it.prompt}</p>
-                  <a
-                    href={it.url}
-                    download={`taara-${i}.png`}
-                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
-                  >
-                    <Download className="h-3.5 w-3.5" /> Download
-                  </a>
+                  <div className="mt-3 flex items-center justify-between">
+                    <a
+                      href={it.url}
+                      download={`taara-${i}.png`}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+                    >
+                      <Download className="h-3.5 w-3.5" /> Download
+                    </a>
+                    <button
+                      onClick={() => remove(it, i)}
+                      className="text-xs text-muted-foreground transition hover:text-destructive"
+                      aria-label="Delete"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
               </MotionGlassCard>
             ))}
