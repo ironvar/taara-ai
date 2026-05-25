@@ -26,6 +26,7 @@ import { AmbientBackground } from "@/components/ambient-background";
 import { Logo } from "@/components/logo";
 import { MotionGlassCard } from "@/components/glass-card";
 import { TOOLS, CATEGORIES } from "@/data/tools";
+import { ReviewsSection } from "@/components/reviews-section";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -50,7 +51,7 @@ function Landing() {
       <TrendingTools />
       <Categories />
       <Features />
-      <Testimonials />
+      <ReviewsSection />
       <Pricing />
       <FAQ />
       <Footer />
