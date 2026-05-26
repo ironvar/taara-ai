@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
 import { MODELS } from "@/data/models";
 import { MotionGlassCard } from "@/components/glass-card";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/app/compare")({
   head: () => ({ meta: [{ title: "Compare Models — Taara" }] }),
@@ -30,9 +31,14 @@ function ComparePage() {
     setBusy((b) => ({ ...b, [modelId]: true }));
     setResponses((r) => ({ ...r, [modelId]: "" }));
     try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
       const resp = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ messages: [{ role: "user", content: userPrompt }], model: m.gateway }),
       });
       if (!resp.ok || !resp.body) {

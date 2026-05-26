@@ -1,20 +1,48 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createClient } from "@supabase/supabase-js";
+import { MODELS } from "@/data/models";
 
 type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
+
+const MODEL_MAP = new Map(MODELS.map((m) => [m.gateway, m.source]));
+const DEFAULT_MODEL = "google/gemini-2.5-flash";
 
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        let body: { messages?: ChatMessage[]; model?: string; source?: "lovable" | "openrouter" };
+        // --- Auth check ---
+        const authHeader = request.headers.get("authorization");
+        if (!authHeader?.startsWith("Bearer ")) {
+          return json({ error: "Unauthorized" }, 401);
+        }
+        const token = authHeader.slice("Bearer ".length);
+        const SUPABASE_URL = process.env.SUPABASE_URL;
+        const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+        if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+          return json({ error: "Server misconfigured" }, 500);
+        }
+        const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+          auth: { persistSession: false, autoRefreshToken: false },
+        });
+        const { data: claims, error: claimsErr } = await sb.auth.getClaims(token);
+        if (claimsErr || !claims?.claims?.sub) {
+          return json({ error: "Unauthorized" }, 401);
+        }
+
+        let body: { messages?: ChatMessage[]; model?: string };
         try {
           body = await request.json();
         } catch {
           return json({ error: "Invalid JSON" }, 400);
         }
 
-        const model = (body.model || "google/gemini-2.5-flash").toString();
-        const source = body.source === "openrouter" ? "openrouter" : "lovable";
+        const requestedModel = (body.model || DEFAULT_MODEL).toString();
+        // Validate model against allowlist; derive source from the allowlist (not client).
+        const source = MODEL_MAP.get(requestedModel);
+        if (!source) return json({ error: "Invalid model" }, 400);
+        const model = requestedModel;
+
         const messages = Array.isArray(body.messages) ? body.messages : [];
         if (messages.length === 0) return json({ error: "No messages" }, 400);
 
