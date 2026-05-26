@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
 import { MODELS } from "@/data/models";
 import { MotionGlassCard } from "@/components/glass-card";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/app/compare")({
   head: () => ({ meta: [{ title: "Compare Models — Taara" }] }),
