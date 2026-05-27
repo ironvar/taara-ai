@@ -8,6 +8,9 @@ import { generateImage } from "@/lib/image.functions";
 import { MotionGlassCard } from "@/components/glass-card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { LimitReachedModal } from "@/components/limit-reached-modal";
+import { PLAN_LIMITS, type Plan } from "@/hooks/use-usage";
+
 
 export const Route = createFileRoute("/app/image")({
   head: () => ({ meta: [{ title: "Image Generator — Taara" }] }),

@@ -380,6 +380,14 @@ function ChatPage() {
           </p>
         </div>
       </div>
+      <LimitReachedModal
+        open={!!limitInfo}
+        onClose={() => setLimitInfo(null)}
+        kind="chat"
+        plan={limitInfo?.plan ?? "free"}
+        limit={limitInfo?.limit}
+      />
     </div>
   );
 }
+
