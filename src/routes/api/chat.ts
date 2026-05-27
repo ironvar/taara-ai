@@ -30,6 +30,27 @@ export const Route = createFileRoute("/api/chat")({
           return json({ error: "Unauthorized" }, 401);
         }
 
+        // Per-user authenticated client for RLS-scoped RPC
+        const userSb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+          auth: { persistSession: false, autoRefreshToken: false },
+          global: { headers: { Authorization: `Bearer ${token}` } },
+        });
+        const { data: usage, error: usageErr } = await userSb.rpc(
+          "check_and_increment_usage",
+          { _kind: "chat" }
+        );
+        if (usageErr) return json({ error: "Usage check failed" }, 500);
+        const u = usage as { allowed: boolean; error?: string; limit?: number; plan?: string; remaining?: number };
+        if (!u?.allowed) {
+          return json({
+            error: "limit_reached",
+            kind: "chat",
+            plan: u?.plan ?? "free",
+            limit: u?.limit,
+          }, 429);
+        }
+
+
         let body: { messages?: ChatMessage[]; model?: string };
         try {
           body = await request.json();

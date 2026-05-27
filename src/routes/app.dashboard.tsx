@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { MessageSquare, ImageIcon, GitCompare, Wand2, Sparkles, TrendingUp, Zap, Folder } from "lucide-react";
 import { MotionGlassCard } from "@/components/glass-card";
+import { UsageWidget } from "@/components/usage-widget";
 import { TOOLS } from "@/data/tools";
+
 
 export const Route = createFileRoute("/app/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Taara" }] }),
@@ -47,17 +49,21 @@ function Dashboard() {
         ))}
       </div>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s, i) => (
-          <MotionGlassCard key={s.label} delay={i * 0.04} className="p-5">
-            <div className="flex items-center justify-between">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">{s.label}</p>
-              <s.icon className="h-4 w-4 text-primary" />
-            </div>
-            <p className="mt-3 font-display text-3xl font-semibold">{s.value}</p>
-          </MotionGlassCard>
-        ))}
+      <div className="mt-10 grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-1"><UsageWidget /></div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
+          {stats.map((s, i) => (
+            <MotionGlassCard key={s.label} delay={i * 0.04} className="p-5">
+              <div className="flex items-center justify-between">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">{s.label}</p>
+                <s.icon className="h-4 w-4 text-primary" />
+              </div>
+              <p className="mt-3 font-display text-3xl font-semibold">{s.value}</p>
+            </MotionGlassCard>
+          ))}
+        </div>
       </div>
+
 
       <div className="mt-10">
         <div className="flex items-center justify-between">

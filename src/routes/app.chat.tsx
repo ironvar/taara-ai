@@ -8,6 +8,9 @@ import { toast } from "sonner";
 import { MODELS, DEFAULT_MODEL_ID, type AIModel } from "@/data/models";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { LimitReachedModal } from "@/components/limit-reached-modal";
+import type { Plan } from "@/hooks/use-usage";
+
 
 export const Route = createFileRoute("/app/chat")({
   head: () => ({ meta: [{ title: "AI Chat — Taara" }] }),
@@ -27,7 +30,9 @@ function ChatPage() {
   const [chats, setChats] = useState<ChatRow[]>([]);
   const [chatId, setChatId] = useState<string | null>(null);
   const [showList, setShowList] = useState(false);
+  const [limitInfo, setLimitInfo] = useState<{ plan: Plan; limit?: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -128,10 +133,16 @@ function ChatPage() {
       });
       if (!resp.ok || !resp.body) {
         const err = await resp.json().catch(() => ({ error: "Request failed" }));
-        toast.error(err.error || "Chat failed");
+        if (resp.status === 429 && err.error === "limit_reached") {
+          setLimitInfo({ plan: (err.plan ?? "free") as Plan, limit: err.limit });
+          setMessages(messages); // revert optimistic add
+        } else {
+          toast.error(err.error || "Chat failed");
+        }
         setLoading(false);
         return;
       }
+
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
       let buf = "";
@@ -369,6 +380,14 @@ function ChatPage() {
           </p>
         </div>
       </div>
+      <LimitReachedModal
+        open={!!limitInfo}
+        onClose={() => setLimitInfo(null)}
+        kind="chat"
+        plan={limitInfo?.plan ?? "free"}
+        limit={limitInfo?.limit}
+      />
     </div>
   );
 }
+

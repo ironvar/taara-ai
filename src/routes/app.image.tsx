@@ -8,6 +8,9 @@ import { generateImage } from "@/lib/image.functions";
 import { MotionGlassCard } from "@/components/glass-card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { LimitReachedModal } from "@/components/limit-reached-modal";
+import { PLAN_LIMITS, type Plan } from "@/hooks/use-usage";
+
 
 export const Route = createFileRoute("/app/image")({
   head: () => ({ meta: [{ title: "Image Generator — Taara" }] }),
@@ -28,6 +31,8 @@ function ImagePage() {
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
   const [loadingGallery, setLoadingGallery] = useState(true);
+  const [limitInfo, setLimitInfo] = useState<{ plan: Plan; limit?: number } | null>(null);
+
 
   // Load saved images
   useEffect(() => {
@@ -65,8 +70,16 @@ function ImagePage() {
       setItems((p) => [newItem, ...p]);
       toast.success("Image generated & saved");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed");
+      const msg = e instanceof Error ? e.message : "Failed";
+      const m = msg.match(/LIMIT_REACHED:image:(\w+):(\d+)/);
+      if (m) {
+        const plan = m[1] as Plan;
+        setLimitInfo({ plan, limit: PLAN_LIMITS[plan].image });
+      } else {
+        toast.error(msg);
+      }
     } finally {
+
       setLoading(false);
     }
   };
@@ -178,6 +191,14 @@ function ImagePage() {
           </div>
         )}
       </div>
+      <LimitReachedModal
+        open={!!limitInfo}
+        onClose={() => setLimitInfo(null)}
+        kind="image"
+        plan={limitInfo?.plan ?? "free"}
+        limit={limitInfo?.limit}
+      />
     </div>
   );
 }
+
