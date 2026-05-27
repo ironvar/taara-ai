@@ -11,9 +11,26 @@ const InputSchema = z.object({
 export const generateImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => InputSchema.parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("LOVABLE_API_KEY is not configured");
+
+    // Enforce daily plan limit atomically
+    const { data: usage, error: usageErr } = await context.supabase.rpc(
+      "check_and_increment_usage",
+      { _kind: "image" }
+    );
+    if (usageErr) throw new Error("Usage check failed");
+    const u = usage as { allowed: boolean; error?: string; limit?: number; plan?: string };
+    if (!u?.allowed) {
+      throw new Error(
+        u?.error === "limit_reached"
+          ? `LIMIT_REACHED:image:${u.plan}:${u.limit}`
+          : "Not allowed"
+      );
+    }
+
+
 
     const fullPrompt = `${data.prompt}${data.style ? `, ${data.style} style` : ""}, aspect ratio ${data.aspect}, ultra high detail, cinematic lighting`;
 
