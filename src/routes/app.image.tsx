@@ -191,6 +191,14 @@ function ImagePage() {
           </div>
         )}
       </div>
+      <LimitReachedModal
+        open={!!limitInfo}
+        onClose={() => setLimitInfo(null)}
+        kind="image"
+        plan={limitInfo?.plan ?? "free"}
+        limit={limitInfo?.limit}
+      />
     </div>
   );
 }
+
