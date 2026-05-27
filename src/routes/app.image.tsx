@@ -31,6 +31,8 @@ function ImagePage() {
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
   const [loadingGallery, setLoadingGallery] = useState(true);
+  const [limitInfo, setLimitInfo] = useState<{ plan: Plan; limit?: number } | null>(null);
+
 
   // Load saved images
   useEffect(() => {
@@ -68,8 +70,16 @@ function ImagePage() {
       setItems((p) => [newItem, ...p]);
       toast.success("Image generated & saved");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed");
+      const msg = e instanceof Error ? e.message : "Failed";
+      const m = msg.match(/LIMIT_REACHED:image:(\w+):(\d+)/);
+      if (m) {
+        const plan = m[1] as Plan;
+        setLimitInfo({ plan, limit: PLAN_LIMITS[plan].image });
+      } else {
+        toast.error(msg);
+      }
     } finally {
+
       setLoading(false);
     }
   };
