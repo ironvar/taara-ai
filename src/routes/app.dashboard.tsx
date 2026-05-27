@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { MessageSquare, ImageIcon, GitCompare, Wand2, Sparkles, TrendingUp, Zap, Folder } from "lucide-react";
 import { MotionGlassCard } from "@/components/glass-card";
+import { UsageWidget } from "@/components/usage-widget";
 import { TOOLS } from "@/data/tools";
+
 
 export const Route = createFileRoute("/app/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Taara" }] }),
