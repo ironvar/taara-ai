@@ -95,16 +95,12 @@ function SubscriptionPage() {
   const upgrade = async (plan: Plan) => {
     if (!user) { toast("Sign in first"); return; }
     setUpgrading(plan);
-    // TODO: replace with Stripe Checkout server fn once payments are enabled.
-    // For now we keep the row up to date so the rest of the system works end-to-end.
-    toast("Payments coming soon — applying preview plan", { description: "Real checkout activates once Stripe is enabled." });
-    await supabase.from("subscriptions").upsert(
-      { user_id: user.id, plan, status: "active" },
-      { onConflict: "user_id" }
-    );
-    await refresh();
+    // Payments are not enabled yet. Plan changes must come from a trusted backend
+    // (Stripe webhook → service role) — the client cannot self-upgrade.
+    toast("Payments coming soon", {
+      description: `${PLAN_LABELS[plan]} will be available once checkout is enabled.`,
+    });
     setUpgrading(null);
-    toast.success(`Switched to ${PLAN_LABELS[plan]}`);
   };
 
   return (
