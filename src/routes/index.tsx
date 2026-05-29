@@ -35,7 +35,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Chat with GPT, Gemini, Claude and more. Generate images and videos. Discover 50+ AI tools — all in one futuristic platform.",
+          "Chat with GPT, Gemini, Claude and more. Generate images and videos. Discover 100+ AI tools — all in one futuristic platform.",
       },
     ],
   }),
@@ -133,7 +133,7 @@ function Hero() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search 50+ AI tools, models or prompts…"
+            placeholder="Search 100+ AI tools, models or prompts…"
             className="flex-1 bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground/70 focus:outline-none"
           />
           <Link
@@ -224,7 +224,7 @@ function TrendingTools() {
           to="/app/tools"
           className="hidden text-sm font-medium text-primary hover:underline sm:inline"
         >
-          See all 50+ →
+          See all 100+ →
         </Link>
       </div>
 
@@ -313,7 +313,7 @@ const FEATURES = [
   { icon: GitCompare, title: "Compare Side-by-Side", desc: "Send one prompt to many models and pick the best answer." },
   { icon: ImageIcon, title: "AI Image Generator", desc: "Beautiful images from a single prompt, any aspect ratio." },
   { icon: Video, title: "AI Video Generator", desc: "Turn ideas into short cinematic videos." },
-  { icon: Wand2, title: "50+ AI Tools Directory", desc: "Browse the best AI tools by category, rating and price." },
+  { icon: Wand2, title: "100+ AI Tools Directory", desc: "Browse the best AI tools by category, rating and price." },
   { icon: Brain, title: "Prompt Library", desc: "Save, organize and reuse your best prompts forever." },
   { icon: Layers, title: "Saved Projects", desc: "Everything you make lives in one tidy dashboard." },
   { icon: Shield, title: "Private & Secure", desc: "Encrypted database, protected routes, no model lock-in." },
