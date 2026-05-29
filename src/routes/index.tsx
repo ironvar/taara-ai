@@ -309,13 +309,13 @@ function Categories() {
 /* ---------- Features ---------- */
 
 const FEATURES = [
-  { icon: MessageSquare, title: "Multi-Model AI Chat", desc: "Switch between GPT-5, Gemini, Claude and Llama in one streaming conversation." },
-  { icon: GitCompare, title: "Compare Side-by-Side", desc: "Send one prompt to many models and pick the best answer." },
-  { icon: ImageIcon, title: "AI Image Generator", desc: "Beautiful images from a single prompt, any aspect ratio." },
-  { icon: Video, title: "AI Video Generator", desc: "Turn ideas into short cinematic videos." },
-  { icon: Wand2, title: "100+ AI Tools Directory", desc: "Browse the best AI tools by category, rating and price." },
-  { icon: Brain, title: "Prompt Library", desc: "Save, organize and reuse your best prompts forever." },
-  { icon: Layers, title: "Saved Projects", desc: "Everything you make lives in one tidy dashboard." },
+  { icon: MessageSquare, title: "Multi-Model AI Chat", desc: "Switch between GPT-5, Gemini, Claude and Llama in one streaming conversation.", to: "/app/chat" as const },
+  { icon: GitCompare, title: "Compare Side-by-Side", desc: "Send one prompt to many models and pick the best answer.", to: "/app/compare" as const },
+  { icon: ImageIcon, title: "AI Image Generator", desc: "Beautiful images from a single prompt, any aspect ratio.", to: "/app/image" as const },
+  { icon: Video, title: "AI Video Generator", desc: "Turn ideas into short cinematic videos.", to: "/app/video" as const },
+  { icon: Wand2, title: "100+ AI Tools Directory", desc: "Browse the best AI tools by category, rating and price.", to: "/app/tools" as const },
+  { icon: Brain, title: "Prompt Library", desc: "Save, organize and reuse your best prompts forever.", to: "/app/prompts" as const },
+  { icon: Layers, title: "Saved Projects", desc: "Everything you make lives in one tidy dashboard.", to: "/app/saved" as const },
   { icon: Shield, title: "Private & Secure", desc: "Encrypted database, protected routes, no model lock-in." },
 ];
 
@@ -334,15 +334,27 @@ function Features() {
       </div>
 
       <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {FEATURES.map((f, i) => (
-          <MotionGlassCard key={f.title} delay={i * 0.04} className="p-6">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary-glow/10 text-primary">
-              <f.icon className="h-5 w-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">{f.title}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
-          </MotionGlassCard>
-        ))}
+        {FEATURES.map((f, i) => {
+          const card = (
+            <MotionGlassCard
+              delay={i * 0.04}
+              className={`p-6 ${f.to ? "transition hover:bg-white/5 hover:shadow-glow focus:outline-none focus:ring-1 focus:ring-primary/40" : ""}`}
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary-glow/10 text-primary">
+                <f.icon className="h-5 w-5" />
+              </div>
+              <h3 className="mt-4 font-semibold">{f.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
+            </MotionGlassCard>
+          );
+          return f.to ? (
+            <Link key={f.title} to={f.to} className="block">
+              {card}
+            </Link>
+          ) : (
+            <div key={f.title}>{card}</div>
+          );
+        })}
       </div>
     </section>
   );
