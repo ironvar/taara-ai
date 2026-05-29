@@ -231,13 +231,16 @@ function TrendingTools() {
       <div className="mt-8 overflow-hidden">
         <div className="flex gap-4 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {trending.map((t, i) => (
-            <motion.div
+            <motion.a
               key={t.id}
+              href={t.url}
+              target="_blank"
+              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.04 }}
-              className="glass glow-hover w-64 shrink-0 rounded-2xl p-5"
+              className="glass glow-hover block w-64 shrink-0 rounded-2xl p-5 transition hover:bg-white/5 focus:outline-none focus:ring-1 focus:ring-primary/40"
             >
               <div className="flex items-center gap-3">
                 <div
@@ -262,8 +265,9 @@ function TrendingTools() {
                   {t.pricing}
                 </span>
               </div>
-            </motion.div>
+            </motion.a>
           ))}
+
         </div>
       </div>
     </section>
