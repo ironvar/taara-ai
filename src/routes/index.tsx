@@ -337,7 +337,6 @@ function Features() {
         {FEATURES.map((f, i) => {
           const card = (
             <MotionGlassCard
-              key={f.title}
               delay={i * 0.04}
               className={`p-6 ${f.to ? "transition hover:bg-white/5 hover:shadow-glow focus:outline-none focus:ring-1 focus:ring-primary/40" : ""}`}
             >
@@ -353,7 +352,7 @@ function Features() {
               {card}
             </Link>
           ) : (
-            card
+            <div key={f.title}>{card}</div>
           );
         })}
       </div>
