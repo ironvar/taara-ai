@@ -334,15 +334,28 @@ function Features() {
       </div>
 
       <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {FEATURES.map((f, i) => (
-          <MotionGlassCard key={f.title} delay={i * 0.04} className="p-6">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary-glow/10 text-primary">
-              <f.icon className="h-5 w-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">{f.title}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
-          </MotionGlassCard>
-        ))}
+        {FEATURES.map((f, i) => {
+          const card = (
+            <MotionGlassCard
+              key={f.title}
+              delay={i * 0.04}
+              className={`p-6 ${f.to ? "transition hover:bg-white/5 hover:shadow-glow focus:outline-none focus:ring-1 focus:ring-primary/40" : ""}`}
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary-glow/10 text-primary">
+                <f.icon className="h-5 w-5" />
+              </div>
+              <h3 className="mt-4 font-semibold">{f.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
+            </MotionGlassCard>
+          );
+          return f.to ? (
+            <Link key={f.title} to={f.to} className="block">
+              {card}
+            </Link>
+          ) : (
+            card
+          );
+        })}
       </div>
     </section>
   );
