@@ -15,7 +15,7 @@ const quickActions = [
   { to: "/app/chat", label: "Start a chat", icon: MessageSquare, desc: "Multi-model AI" },
   { to: "/app/image", label: "Generate image", icon: ImageIcon, desc: "Any style or ratio" },
   { to: "/app/compare", label: "Compare models", icon: GitCompare, desc: "Side-by-side" },
-  { to: "/app/tools", label: "Browse tools", icon: Wand2, desc: "50+ curated" },
+  { to: "/app/tools", label: "Browse tools", icon: Wand2, desc: "100+ curated" },
 ];
 
 const stats = [
