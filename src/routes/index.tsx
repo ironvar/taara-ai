@@ -177,20 +177,24 @@ function Hero() {
           <div className="rounded-2xl bg-surface/60 p-6">
             <div className="grid gap-4 sm:grid-cols-3">
               {[
-                { icon: MessageSquare, title: "Multi-model chat", desc: "Talk to GPT, Gemini, Claude side-by-side." },
-                { icon: ImageIcon, title: "Image generator", desc: "Render in any style or aspect ratio." },
-                { icon: GitCompare, title: "Compare models", desc: "Send one prompt to many models." },
+                { icon: MessageSquare, title: "Multi-model chat", desc: "Talk to GPT, Gemini, Claude side-by-side.", to: "/app/chat" as const },
+                { icon: ImageIcon, title: "Image generator", desc: "Render in any style or aspect ratio.", to: "/app/image" as const },
+                { icon: GitCompare, title: "Compare models", desc: "Send one prompt to many models.", to: "/app/compare" as const },
               ].map((f, i) => (
                 <motion.div
                   key={f.title}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
-                  className="glass rounded-xl p-5"
                 >
-                  <f.icon className="h-5 w-5 text-primary" />
-                  <p className="mt-3 text-sm font-semibold">{f.title}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{f.desc}</p>
+                  <Link
+                    to={f.to}
+                    className="glass block rounded-xl p-5 transition hover:bg-white/5 hover:shadow-glow focus:outline-none focus:ring-1 focus:ring-primary/40"
+                  >
+                    <f.icon className="h-5 w-5 text-primary" />
+                    <p className="mt-3 text-sm font-semibold">{f.title}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{f.desc}</p>
+                  </Link>
                 </motion.div>
               ))}
             </div>
